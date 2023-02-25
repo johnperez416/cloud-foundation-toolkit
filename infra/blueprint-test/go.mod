@@ -13,10 +13,7 @@ require (
 	github.com/otiai10/copy v1.6.0
 	github.com/stretchr/testify v1.7.0
 	github.com/tidwall/gjson v1.10.2
-	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83 // indirect
-	golang.org/x/net v0.0.0-20210503060351-7fd8e65b6420 // indirect
-	golang.org/x/sys v0.0.0-20210603125802-9665404d3644 // indirect
-	golang.org/x/term v0.0.0-20210220032956-6a3ed077a48d // indirect
+	golang.org/x/net v0.7.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	sigs.k8s.io/kustomize/kyaml v0.11.0
 )
