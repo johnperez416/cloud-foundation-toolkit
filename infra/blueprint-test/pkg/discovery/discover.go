@@ -19,7 +19,6 @@ package discovery
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 
@@ -33,16 +32,16 @@ const (
 )
 
 // GetConfigDirFromTestDir attempts to autodiscover config for a given explicit test based on dirpath for the test.
-func GetConfigDirFromTestDir(cwd string) (string, error) {
-	name := path.Base(cwd)
+func GetConfigDirFromTestDir(testDir string) (string, error) {
+	name := path.Base(testDir)
 	// check if fixture dir exists at ../../fixture/fixtureName
-	fixturePath := path.Join("../../", FixtureDir, name)
+	fixturePath := path.Clean(path.Join(testDir, "../../", FixtureDir, name))
 	_, err := os.Stat(fixturePath)
 	if err == nil {
 		return fixturePath, nil
 	}
 	// check if example dir exists at ../../../examples/exampleName
-	examplePath := path.Join("../../../", ExamplesDir, name)
+	examplePath := path.Clean(path.Join(testDir, "../../../", ExamplesDir, name))
 	_, err = os.Stat(examplePath)
 	if err == nil {
 		return examplePath, nil
@@ -59,15 +58,15 @@ func FindTestConfigs(t testing.TB, intTestDir string) map[string]string {
 	fixturesBase := path.Join(testBase, "../", FixtureDir)
 	explicitTests, err := findDirs(testBase)
 	if err != nil {
-		t.Logf("Error discovering explicit tests: %v", err)
+		t.Logf("Skipping explicit tests discovery: %v", err)
 	}
 	fixtures, err := findDirs(fixturesBase)
 	if err != nil {
-		t.Logf("Error discovering fixtures: %v", err)
+		t.Logf("Skipping fixtures discovery: %v", err)
 	}
 	examples, err := findDirs(examplesBase)
 	if err != nil {
-		t.Logf("Error discovering examples: %v", err)
+		t.Logf("Skipping examples discovery: %v", err)
 	}
 	testCases := make(map[string]string)
 
@@ -105,13 +104,13 @@ func GetKnownDirInParents(dir string, max int) (string, error) {
 	if !os.IsNotExist(err) {
 		return dirInParent, err
 	}
-	return GetKnownDirInParents(path.Join("..", dir), max-1)
+	return GetKnownDirInParents(dirInParent, max-1)
 }
 
 // findDirs returns a map of directories in path
 func findDirs(path string) (map[string]bool, error) {
 	dirs := make(map[string]bool)
-	files, err := ioutil.ReadDir(path)
+	files, err := os.ReadDir(path)
 	if err != nil {
 		return dirs, err
 	}
